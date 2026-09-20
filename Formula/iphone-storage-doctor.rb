@@ -3,9 +3,9 @@ class IphoneStorageDoctor < Formula
 
   desc "Diagnose iPhone storage and battery health over USB"
   homepage "https://github.com/tlegourrierec/iphone-storage-doctor"
-  url "https://github.com/tlegourrierec/iphone-storage-doctor/archive/refs/tags/v1.3.1.tar.gz"
+  url "https://github.com/tlegourrierec/iphone-storage-doctor/archive/refs/tags/v1.3.2.tar.gz"
   # Remplacer par : shasum -a 256 de l'archive publiée par GitHub.
-  sha256 "7ce3f6d136bc6447c619c97f216c45331355ef9a0ca29e742c826b00893cd14a"
+  sha256 "45c8f5c957e19d7a2ebeac79c57e01b72450e3f0c2c6b6eb7d0ceee2f4b97712"
   license "MIT"
 
   depends_on "python@3.13"
