@@ -1,0 +1,10 @@
+{
+  "name": "revente-app",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Photos d'un objet -> identification, prix de revente, annonces optimisées par plateforme",
+  "scripts": { "start": "node server.js" },
+  "engines": { "node": ">=20" },
+  "dependencies": { "@anthropic-ai/sdk": "^0.128.0" }
+}
