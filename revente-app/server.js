@@ -55,29 +55,59 @@ function parseJson(text) {
 }
 
 // Gratuit : Google Gemini (clé sur https://aistudio.google.com/apikey)
-async function analyzeGemini(images, note) {
-  const model = process.env.GEMINI_MODEL || "gemini-2.5-flash";
-  const parts = images.map((img) => ({ inline_data: { mime_type: img.mediaType, data: img.data } }));
-  parts.push({ text: `Voici les photos de l'objet à revendre.${note ? ` Infos du vendeur : ${note}` : ""}` });
+async function callGemini(parts, withSearch, extraSystem = "") {
+  // Si un modèle est surchargé (503), on essaie le suivant.
+  const models = [process.env.GEMINI_MODEL || "gemini-3.8-flash", "gemini-flash-latest", "gemini-3.5-flash"];
+  let res;
+  for (const model of models) {
+    res = await callGeminiModel(model, parts, withSearch, extraSystem);
+    if (res.status !== 503) break;
+  }
+  return res;
+}
+
+async function callGeminiModel(model, parts, withSearch, extraSystem) {
   const r = await fetch(
     `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
     {
       method: "POST",
       headers: { "content-type": "application/json", "x-goog-api-key": process.env.GEMINI_API_KEY },
       body: JSON.stringify({
-        system_instruction: { parts: [{ text: SYSTEM }] },
+        system_instruction: { parts: [{ text: SYSTEM + extraSystem }] },
         contents: [{ role: "user", parts }],
-        tools: [{ google_search: {} }],
+        ...(withSearch ? { tools: [{ google_search: {} }] } : {}),
       }),
     },
   );
-  const data = await r.json();
-  if (!r.ok) {
-    if (r.status === 429) throw new Error("Quota gratuit Gemini atteint pour le moment, réessaie plus tard.");
-    throw new Error(`Erreur Gemini : ${data.error?.message || r.status}`);
+  return { status: r.status, data: await r.json() };
+}
+
+async function analyzeGemini(images, note) {
+  const parts = images.map((img) => ({ inline_data: { mime_type: img.mediaType, data: img.data } }));
+  parts.push({ text: `Voici les photos de l'objet à revendre.${note ? ` Infos du vendeur : ${note}` : ""}` });
+
+  // 1) Avec recherche web Google. 2) Si le quota gratuit ne l'autorise pas, sans recherche.
+  let { status, data } = await callGemini(parts, true);
+  let sansRecherche = false;
+  if (status === 429) {
+    sansRecherche = true;
+    ({ status, data } = await callGemini(parts, false,
+      "\n\nIMPORTANT : tu n'as PAS accès à la recherche web. Laisse \"comparables\" vide ([]), estime les prix d'après tes connaissances du marché de l'occasion en France et indique-le clairement dans \"justification\"."));
+  }
+  if (status !== 200) {
+    if (status === 503) throw new Error("Google est surchargé en ce moment, réessaie dans quelques minutes.");
+    if (status === 429) throw new Error("Quota gratuit Gemini atteint pour le moment, réessaie dans une minute.");
+    throw new Error(`Erreur Gemini : ${data.error?.message || status}`);
   }
   const text = (data.candidates?.[0]?.content?.parts || []).map((p) => p.text || "").join("\n");
-  return parseJson(text);
+  const result = parseJson(text);
+  if (sansRecherche) {
+    result.conseils = [
+      "⚠️ Prix estimés SANS recherche web (non incluse dans l'offre gratuite Google) : vérifie 2-3 annonces similaires sur Vinted/Leboncoin avant de fixer ton prix.",
+      ...(result.conseils || []),
+    ];
+  }
+  return result;
 }
 
 async function analyze(images, note) {
