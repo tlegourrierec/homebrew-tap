@@ -11,8 +11,8 @@ Tu prends des photos d'un objet, l'app :
 
 1. Installe **Node.js** (version 20 ou plus) : https://nodejs.org → bouton « LTS ».
 2. Décompresse `revente-app.zip` (par exemple dans Téléchargements).
-3. Crée une clé API sur https://console.anthropic.com → *API Keys* (il faut ajouter quelques euros de crédit).
-4. Dans le dossier `revente-app`, copie `.env.example` et renomme la copie en `.env`, puis colle ta clé après `ANTHROPIC_API_KEY=`.
+3. Crée une clé **gratuite** sur https://aistudio.google.com/apikey : connecte-toi avec ton compte Google, puis *Create API key*. Aucune carte bancaire n'est demandée.
+4. Dans le dossier `revente-app`, copie `.env.example` et renomme la copie en `.env`, puis colle ta clé après `GEMINI_API_KEY=`.
 5. Ouvre un terminal dans le dossier et lance :
    ```
    npm install
@@ -34,7 +34,9 @@ Si le téléphone n'arrive pas à se connecter, autorise Node.js dans le pare-fe
 
 ## Coût
 
-Chaque analyse fait des recherches web et utilise l'API Claude : compte **quelques dizaines de centimes par objet**. Le coût réel est visible dans la console Anthropic.
+**Gratuit** avec Gemini, dans la limite du quota gratuit de Google : quelques dizaines d'analyses par jour. Si tu atteins la limite, l'app te demande de réessayer plus tard.
+À savoir : sur l'offre gratuite, Google peut utiliser les photos envoyées pour améliorer ses services.
+Si tu remplis un jour `ANTHROPIC_API_KEY` (payant, environ quelques dizaines de centimes par objet), l'app utilise Claude à la place, qui fait des recherches plus poussées.
 
 ## Limites de cette version
 

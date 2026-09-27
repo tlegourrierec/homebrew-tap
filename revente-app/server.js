@@ -48,7 +48,40 @@ Réponds en français. Termine OBLIGATOIREMENT ta réponse par un unique bloc \`
   "conseils": [""]
 }`;
 
+function parseJson(text) {
+  const blocks = [...text.matchAll(/```json\s*([\s\S]*?)```/g)];
+  if (!blocks.length) throw new Error("Réponse inattendue du modèle (pas de JSON). Réessaie.");
+  return JSON.parse(blocks[blocks.length - 1][1]);
+}
+
+// Gratuit : Google Gemini (clé sur https://aistudio.google.com/apikey)
+async function analyzeGemini(images, note) {
+  const model = process.env.GEMINI_MODEL || "gemini-2.5-flash";
+  const parts = images.map((img) => ({ inline_data: { mime_type: img.mediaType, data: img.data } }));
+  parts.push({ text: `Voici les photos de l'objet à revendre.${note ? ` Infos du vendeur : ${note}` : ""}` });
+  const r = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
+    {
+      method: "POST",
+      headers: { "content-type": "application/json", "x-goog-api-key": process.env.GEMINI_API_KEY },
+      body: JSON.stringify({
+        system_instruction: { parts: [{ text: SYSTEM }] },
+        contents: [{ role: "user", parts }],
+        tools: [{ google_search: {} }],
+      }),
+    },
+  );
+  const data = await r.json();
+  if (!r.ok) {
+    if (r.status === 429) throw new Error("Quota gratuit Gemini atteint pour le moment, réessaie plus tard.");
+    throw new Error(`Erreur Gemini : ${data.error?.message || r.status}`);
+  }
+  const text = (data.candidates?.[0]?.content?.parts || []).map((p) => p.text || "").join("\n");
+  return parseJson(text);
+}
+
 async function analyze(images, note) {
+  if (!process.env.ANTHROPIC_API_KEY && process.env.GEMINI_API_KEY) return analyzeGemini(images, note);
   const content = images.map((img) => ({
     type: "image",
     source: { type: "base64", media_type: img.mediaType, data: img.data },
@@ -91,9 +124,7 @@ async function analyze(images, note) {
     .filter((b) => b.type === "text")
     .map((b) => b.text)
     .join("\n");
-  const match = text.match(/```json\s*([\s\S]*?)```(?![\s\S]*```json)/);
-  if (!match) throw new Error("Réponse inattendue du modèle (pas de JSON).");
-  return JSON.parse(match[1]);
+  return parseJson(text);
 }
 
 // ---------- Notifications ----------
@@ -206,7 +237,9 @@ server.listen(PORT, "0.0.0.0", () => {
       if (a.family === "IPv4" && !a.internal) console.log(`  Sur ton réseau (téléphone…) : http://${a.address}:${PORT}`);
     }
   }
-  if (!process.env.ANTHROPIC_API_KEY) console.log("\n⚠️  ANTHROPIC_API_KEY manquante : copie .env.example en .env et remplis-la.");
+  if (process.env.ANTHROPIC_API_KEY) console.log("\n  Moteur : Claude");
+  else if (process.env.GEMINI_API_KEY) console.log("\n  Moteur : Gemini (gratuit)");
+  else console.log("\n⚠️  Aucune clé : copie .env.example en .env et colle ta clé GEMINI_API_KEY.");
 });
 
 function loadEnv(file) {
