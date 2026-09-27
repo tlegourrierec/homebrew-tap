@@ -7,7 +7,15 @@ Tu prends des photos d'un objet, l'app :
 4. rédige une annonce adaptée à chaque site (Vinted, Leboncoin, eBay, et d'autres si c'est pertinent) ;
 5. suit tes annonces (publiée / vendue) et t'envoie une notification Telegram.
 
-## Installation (une seule fois)
+## Lancement rapide (le plus simple)
+
+1. Installe **Node.js** : https://nodejs.org → bouton « LTS ».
+2. Crée ta clé gratuite : https://aistudio.google.com/apikey.
+3. Double-clique sur **`Lancer-Mac.command`** (Mac) ou **`Lancer-Windows.bat`** (Windows).
+   La première fois, colle ta clé quand elle t'est demandée. L'app s'ouvre ensuite toute seule dans le navigateur.
+   Sur Mac, si un message dit que le fichier ne peut pas être ouvert : clic droit sur le fichier, puis **Ouvrir**, puis **Ouvrir**.
+
+## Installation manuelle (alternative)
 
 1. Installe **Node.js** (version 20 ou plus) : https://nodejs.org → bouton « LTS ».
 2. Décompresse `revente-app.zip` (par exemple dans Téléchargements).
