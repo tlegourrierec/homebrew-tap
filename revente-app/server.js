@@ -33,10 +33,12 @@ const SYSTEM = `Tu es un expert de la revente d'occasion en France (Vinted, Lebo
 2. Chercher sur le web des objets IDENTIQUES ou quasi identiques actuellement en vente ou déjà vendus (privilégie les prix de vente réels / annonces "vendu"). Fais plusieurs recherches ciblées (référence exacte, nom du modèle, sur chaque plateforme). Ne retiens que des comparables réellement proches, avec leur URL.
 3. En déduire un prix : vente rapide, prix optimal, prix haut, en tenant compte de l'état.
 4. Rédiger une annonce optimisée pour CHAQUE plateforme pertinente, en respectant ses usages et son référencement interne :
-   - Vinted : titre court marque + type + taille/couleur, description conviviale, catégorie Vinted exacte, état selon la grille Vinted, hashtags/mots-clés.
-   - Leboncoin : titre descriptif avec mots recherchés, description détaillée, catégorie Leboncoin exacte.
-   - eBay : titre de 80 caractères max bourré de mots-clés, caractéristiques (item specifics), état selon la grille eBay.
-   - Ajoute d'autres plateformes si elles sont plus adaptées à l'objet (ex : Vestiaire Collective pour le luxe, Back Market pour l'électronique).
+   Pour chaque plateforme, remplis TOUS les champs de son formulaire de dépôt, dans l'ordre du formulaire, dans "champs" :
+   - Vinted : Catégorie (chemin complet Vinted), Marque, Taille, État (Neuf avec étiquette / Neuf sans étiquette / Très bon état / Bon état / Satisfaisant), Couleur(s) (2 max), Matière, Format du colis (Petit / Moyen / Grand) ; titre court marque + type + taille/couleur ; description conviviale avec hashtags à la fin.
+   - Leboncoin : Catégorie, Sous-catégorie, Marque, Modèle, État (Neuf / Très bon état / Bon état / État satisfaisant), Couleur, Matière, Taille/Pointure si applicable, Dimensions, Mode de remise (main propre / livraison), Poids pour la livraison (tranche Leboncoin), Prix conseillé livraison incluse ; titre avec les mots les plus recherchés ; description détaillée et rassurante.
+   - eBay : Catégorie eBay (chemin), État (grille eBay) + Description de l'état, toutes les Caractéristiques de l'objet (Marque, Modèle, Type, Taille, Couleur, Matière, Style, Coupe, Département, Pays de fabrication, MPN/Référence, EAN si connu…), Format (Prix fixe), Accepter les offres (oui + prix minimum conseillé), Poids et dimensions du colis, Mode d'envoi conseillé, Retours ; titre de 80 caractères max bourré de mots-clés.
+   - Ajoute d'autres plateformes si elles sont plus adaptées à l'objet (ex : Vestiaire Collective pour le luxe, Back Market pour l'électronique, Selency pour la déco), avec leurs champs.
+   Mets "À vérifier" si une valeur ne peut pas être déduite, jamais une invention.
 Ne jamais inventer un comparable, un prix ou une URL.
 
 Réponds en français. Termine OBLIGATOIREMENT ta réponse par un unique bloc \`\`\`json contenant exactement cette structure :
@@ -44,14 +46,32 @@ Réponds en français. Termine OBLIGATOIREMENT ta réponse par un unique bloc \`
   "identification": { "titre": "", "marque": "", "modele": "", "reference": "", "categorie": "", "matiere": "", "couleur": "", "taille": "", "dimensions": "", "etat": "", "defauts": [""], "confiance": "haute|moyenne|faible", "a_verifier": [""] },
   "comparables": [ { "titre": "", "plateforme": "", "prix": 0, "statut": "en vente|vendu", "etat": "", "similarite": "identique|quasi identique|proche", "url": "" } ],
   "prix": { "rapide": 0, "optimal": 0, "haut": 0, "devise": "EUR", "justification": "" },
-  "annonces": [ { "plateforme": "", "titre": "", "description": "", "categorie": "", "etat": "", "prix": 0, "mots_cles": [""], "attributs": { } } ],
+  "colis": { "poids_kg": 0, "dimensions_cm": "", "emballage": "" },
+  "annonces": [ { "plateforme": "", "titre": "", "description": "", "prix": 0, "champs": [ { "nom": "", "valeur": "" } ], "mots_cles": [""] } ],
   "conseils": [""]
 }`;
 
 function parseJson(text) {
   const blocks = [...text.matchAll(/```json\s*([\s\S]*?)```/g)];
   if (!blocks.length) throw new Error("Réponse inattendue du modèle (pas de JSON). Réessaie.");
-  return JSON.parse(blocks[blocks.length - 1][1]);
+  return JSON.parse(escapeControlChars(blocks[blocks.length - 1][1]));
+}
+
+// Certains modèles mettent de vrais retours à la ligne dans les chaînes JSON : on les échappe.
+function escapeControlChars(json) {
+  let out = "", inString = false, escaped = false;
+  for (const ch of json) {
+    if (inString) {
+      if (escaped) escaped = false;
+      else if (ch === "\\") escaped = true;
+      else if (ch === '"') inString = false;
+      else if (ch === "\n") { out += "\\n"; continue; }
+      else if (ch === "\r") continue;
+      else if (ch === "\t") { out += "\\t"; continue; }
+    } else if (ch === '"') inString = true;
+    out += ch;
+  }
+  return out;
 }
 
 // Gratuit : Google Gemini (clé sur https://aistudio.google.com/apikey)

@@ -2,72 +2,203 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#efedea">
+<meta name="apple-mobile-web-app-capable" content="yes">
 <title>Revente</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  :root { --bg:#f6f5f2; --card:#fff; --ink:#1a1a1a; --muted:#6b6b6b; --line:#e4e2dd; --accent:#1f6f4a; --warn:#b4541a; }
-  @media (prefers-color-scheme: dark) { :root { --bg:#141414; --card:#1f1f1f; --ink:#f1f1f1; --muted:#9a9a9a; --line:#333; --accent:#4cc38a; --warn:#f0a060; } }
-  * { box-sizing: border-box; }
-  body { margin:0; font:16px/1.45 system-ui, -apple-system, sans-serif; background:var(--bg); color:var(--ink); }
-  main { max-width:760px; margin:0 auto; padding:16px; }
-  h1 { font-size:22px; margin:8px 0 16px; }
-  h2 { font-size:17px; margin:0 0 10px; }
-  .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px; margin-bottom:14px; }
-  button, .btn { font:inherit; border:0; border-radius:10px; padding:10px 14px; background:var(--accent); color:#fff; cursor:pointer; text-decoration:none; display:inline-block; }
-  button.ghost, .btn.ghost { background:transparent; color:var(--ink); border:1px solid var(--line); }
-  button:disabled { opacity:.5; }
-  textarea, input { width:100%; font:inherit; padding:10px; border-radius:10px; border:1px solid var(--line); background:var(--bg); color:var(--ink); }
-  .thumbs { display:flex; gap:8px; flex-wrap:wrap; margin:10px 0; }
-  .thumbs img { width:84px; height:84px; object-fit:cover; border-radius:8px; }
-  .row { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
-  .muted { color:var(--muted); font-size:14px; }
-  .prices { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; text-align:center; }
-  .prices div { border:1px solid var(--line); border-radius:10px; padding:10px; }
-  .prices b { display:block; font-size:22px; }
-  .prices .best { border-color:var(--accent); }
+  :root {
+    --bg:#efedea; --card:#ffffff; --soft:#f6f5f3; --ink:#141414; --muted:#8a8782; --line:#e7e4df;
+    --accent:#ff5a1f; --accent-ink:#fff; --ok:#1f9d55; --warn:#c2410c; --shadow:0 10px 30px rgba(20,20,20,.07);
+  }
+  @media (prefers-color-scheme: dark) { :root {
+    --bg:#121212; --card:#1c1c1c; --soft:#242424; --ink:#f3f1ee; --muted:#9a968f; --line:#2c2c2c; --shadow:none;
+  } }
+  * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html, body { margin:0; background:var(--bg); color:var(--ink); font:15px/1.45 Inter, system-ui, sans-serif; }
+  main { max-width:520px; margin:0 auto; padding:16px 16px 120px; }
+  .display { font-family:Anton, Impact, sans-serif; font-weight:400; letter-spacing:.2px; line-height:1.02; }
+  h1.display { font-size:44px; margin:18px 0 8px; }
+  h2 { font-size:18px; margin:0; font-weight:700; }
+  .muted { color:var(--muted); }
+  .small { font-size:13px; }
+  .card { background:var(--card); border-radius:28px; padding:18px; box-shadow:var(--shadow); margin-bottom:14px; }
+  .row { display:flex; align-items:center; gap:10px; }
+  .between { justify-content:space-between; }
+  .btn { font:600 15px Inter, sans-serif; border:0; border-radius:99px; padding:15px 22px; background:var(--ink); color:var(--card); cursor:pointer; text-decoration:none; display:inline-flex; align-items:center; justify-content:center; gap:8px; }
+  .btn.accent { background:var(--accent); color:var(--accent-ink); }
+  .btn.ghost { background:var(--soft); color:var(--ink); }
+  .btn.block { width:100%; }
+  .btn:disabled { opacity:.35; }
+  .icon-btn { width:44px; height:44px; border-radius:50%; border:0; background:var(--card); color:var(--ink); box-shadow:var(--shadow); display:grid; place-items:center; cursor:pointer; font-size:18px; }
+  .pill { display:inline-flex; align-items:center; gap:6px; padding:6px 12px; border-radius:99px; background:var(--soft); font-size:13px; font-weight:600; }
+  .pill.ok { background:color-mix(in srgb, var(--ok) 15%, transparent); color:var(--ok); }
+  .pill.warn { background:color-mix(in srgb, var(--warn) 14%, transparent); color:var(--warn); }
+  .view { display:none; animation:in .25s ease; }
+  .view.on { display:block; }
+  @keyframes in { from { opacity:0; transform:translateY(6px); } }
+
+  /* Accueil */
+  .hero { position:relative; background:var(--card); border-radius:32px; padding:24px; overflow:hidden; box-shadow:var(--shadow); }
+  .hero .cta { position:absolute; right:22px; bottom:22px; width:74px; height:74px; border-radius:50%; background:var(--accent); color:#fff; display:grid; place-items:center; font-size:28px; border:0; cursor:pointer; }
+  .stats { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:14px 0; }
+  .stat { background:var(--card); border-radius:22px; padding:14px; box-shadow:var(--shadow); }
+  .stat b { display:block; font:400 26px Anton, sans-serif; }
+  .section-head { display:flex; justify-content:space-between; align-items:center; margin:22px 4px 12px; }
+  .see { border:1px solid var(--line); background:transparent; color:var(--ink); border-radius:99px; padding:6px 12px; font:600 13px Inter, system-ui, sans-serif; cursor:pointer; }
+  .hscroll { display:flex; gap:12px; overflow-x:auto; scroll-snap-type:x mandatory; padding-bottom:6px; }
+  .hscroll::-webkit-scrollbar { display:none; }
+  .tile { flex:0 0 160px; scroll-snap-align:start; cursor:pointer; }
+  .tile .img { aspect-ratio:1; border-radius:24px; background:var(--soft) center/cover; position:relative; }
+  .tile .badge { position:absolute; top:10px; left:10px; }
+  .tile p { margin:8px 4px 0; font-weight:600; font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .tile .price { margin:2px 4px; font:400 20px Anton, sans-serif; }
+  .grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .grid .tile { flex:none; }
+  .empty { text-align:center; padding:30px 10px; }
+
+  /* Vendre */
+  .photos { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:14px 0; }
+  .photos .ph { aspect-ratio:1; border-radius:18px; background:var(--soft) center/cover; position:relative; }
+  .photos .ph:first-child { grid-column:span 2; grid-row:span 2; }
+  .photos .rm { position:absolute; top:-6px; right:-6px; width:24px; height:24px; border-radius:50%; background:var(--accent); color:#fff; border:2px solid var(--card); font-weight:700; line-height:18px; cursor:pointer; }
+  .add { aspect-ratio:1; border-radius:18px; border:2px dashed var(--line); display:grid; place-items:center; color:var(--muted); font-size:28px; cursor:pointer; }
+  .photos:empty + .tips { display:block; }
+  textarea { width:100%; font:inherit; padding:14px 16px; border-radius:20px; border:0; background:var(--soft); color:var(--ink); resize:none; }
+  .tips { font-size:13px; color:var(--muted); margin:6px 4px 14px; }
+  .loader { text-align:center; padding:36px 16px; }
+  .loader .ring { width:64px; height:64px; margin:0 auto 18px; border-radius:50%; border:6px solid var(--soft); border-top-color:var(--accent); animation:spin 1s linear infinite; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+  .steps { text-align:left; display:inline-block; margin-top:8px; }
+  .steps div { padding:4px 0; color:var(--muted); }
+  .steps div.on { color:var(--ink); font-weight:600; }
+  .steps div.done { color:var(--ok); }
+
+  /* Détail */
+  .topbar { display:flex; justify-content:space-between; align-items:center; margin:4px 0 14px; }
+  .gallery { border-radius:30px; overflow:hidden; background:var(--card); box-shadow:var(--shadow); }
+  .gallery .main { aspect-ratio:1; background:var(--soft) center/cover; }
+  .gallery .thumbs { display:flex; gap:8px; padding:10px; overflow-x:auto; }
+  .gallery .thumbs div { flex:0 0 56px; height:56px; border-radius:14px; background:center/cover; cursor:pointer; opacity:.55; }
+  .gallery .thumbs div.on { opacity:1; outline:2px solid var(--ink); outline-offset:2px; }
+  .kicker { text-transform:uppercase; letter-spacing:.08em; font-size:12px; color:var(--muted); margin:18px 4px 4px; }
+  .title-xl { font-size:26px; margin:0 4px 10px; }
+  .prices { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+  .prices button { border:0; border-radius:20px; padding:12px 6px; background:var(--soft); color:var(--ink); cursor:pointer; font:inherit; }
+  .prices button b { display:block; font:400 24px Anton, sans-serif; }
+  .prices button.on { background:var(--ink); color:var(--card); }
+  .chips { display:flex; gap:8px; overflow-x:auto; padding:2px 0 4px; }
+  .chips button { flex:none; border:1px solid var(--line); background:var(--card); color:var(--ink); border-radius:99px; padding:10px 16px; font:600 14px Inter, system-ui, sans-serif; cursor:pointer; }
+  .chips button.on { background:var(--ink); color:var(--card); border-color:var(--ink); }
+  .fields { margin:0; }
+  .field { display:flex; justify-content:space-between; gap:12px; padding:14px 2px; border-bottom:1px solid var(--line); cursor:pointer; }
+  .field:last-child { border-bottom:0; }
+  .field dt { color:var(--muted); flex:0 0 42%; }
+  .field dd { margin:0; text-align:right; font-weight:600; word-break:break-word; }
+  .field.check dd { color:var(--warn); }
+  .block-text { background:var(--soft); border-radius:18px; padding:14px; white-space:pre-wrap; margin:10px 0; }
+  .copy { border:0; background:transparent; color:var(--accent); font:600 13px Inter, system-ui, sans-serif; cursor:pointer; padding:4px 0; }
   table { width:100%; border-collapse:collapse; font-size:14px; }
-  td, th { text-align:left; padding:6px 4px; border-bottom:1px solid var(--line); vertical-align:top; }
-  .tabs { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px; }
-  .tabs button { background:transparent; color:var(--ink); border:1px solid var(--line); }
-  .tabs button.on { background:var(--accent); color:#fff; border-color:var(--accent); }
-  pre { white-space:pre-wrap; font:inherit; margin:0; }
-  .tag { display:inline-block; font-size:12px; padding:2px 8px; border-radius:99px; border:1px solid var(--line); margin:2px; }
-  .warn { color:var(--warn); }
-  .item { display:flex; gap:12px; align-items:center; cursor:pointer; }
-  .item img { width:56px; height:56px; object-fit:cover; border-radius:8px; }
-  .spinner { width:18px; height:18px; border:3px solid var(--line); border-top-color:var(--accent); border-radius:50%; animation:s 1s linear infinite; display:inline-block; vertical-align:middle; }
-  @keyframes s { to { transform:rotate(360deg); } }
+  td { padding:10px 2px; border-bottom:1px solid var(--line); vertical-align:top; }
+  td:last-child { text-align:right; font-weight:700; white-space:nowrap; }
+  a { color:inherit; }
+  input { width:100%; font:inherit; padding:14px 16px; border-radius:99px; border:0; background:var(--soft); color:var(--ink); }
+  .sticky[hidden] { display:none; }
+  .sticky { position:fixed; left:0; right:0; bottom:18px; display:flex; justify-content:center; pointer-events:none; }
+  .sticky .inner { pointer-events:auto; width:min(488px, calc(100% - 32px)); background:var(--card); border-radius:99px; padding:8px 8px 8px 22px; box-shadow:0 12px 40px rgba(0,0,0,.18); display:flex; align-items:center; justify-content:space-between; gap:10px; }
+  .sticky .inner b { font:400 26px Anton, sans-serif; }
+
+  /* Navigation */
+  nav { position:fixed; left:0; right:0; bottom:18px; display:flex; justify-content:center; z-index:5; }
+  nav .bar { background:var(--ink); border-radius:99px; padding:8px; display:flex; gap:6px; box-shadow:0 12px 40px rgba(0,0,0,.25); }
+  nav button { border:0; background:transparent; color:color-mix(in srgb, var(--card) 70%, transparent); font:600 14px Inter, system-ui, sans-serif; padding:12px 18px; border-radius:99px; cursor:pointer; }
+  nav button.on { background:var(--card); color:var(--ink); }
+  nav button.sell { background:var(--accent); color:#fff; }
+  nav[hidden] { display:none; }
+  .toast { position:fixed; top:16px; left:50%; transform:translateX(-50%); background:var(--ink); color:var(--card); padding:10px 18px; border-radius:99px; font-weight:600; z-index:10; opacity:0; transition:.2s; pointer-events:none; }
+  .toast.on { opacity:1; }
 </style>
 </head>
 <body>
 <main>
-  <h1>📸 Revente</h1>
+  <!-- ACCUEIL -->
+  <section id="v-home" class="view on">
+    <div class="row between"><span class="pill">📸 Revente</span><span class="muted small" id="today"></span></div>
+    <div class="hero" style="margin-top:14px">
+      <h1 class="display">Vends au<br>bon prix,<br>en une photo.</h1>
+      <p class="muted" style="max-width:60%">Identification, prix du marché et annonces prêtes pour Vinted, Leboncoin et eBay.</p>
+      <button class="cta" data-go="sell" aria-label="Vendre un objet">→</button>
+    </div>
+    <div class="stats">
+      <div class="stat"><span class="muted small">En vente</span><b id="s-sale">0</b></div>
+      <div class="stat"><span class="muted small">Vendus</span><b id="s-sold">0</b></div>
+      <div class="stat"><span class="muted small">Valeur</span><b id="s-value">0 €</b></div>
+    </div>
+    <div class="section-head"><h2>Récents</h2><button class="see" data-go="items">Tout voir →</button></div>
+    <div id="recent" class="hscroll"></div>
+  </section>
 
-  <section class="card">
-    <h2>Nouvel objet</h2>
-    <p class="muted">Prends plusieurs photos : vue d'ensemble, étiquettes, logo, numéro de série, défauts.</p>
-    <input id="files" type="file" accept="image/*" multiple capture="environment">
-    <div id="thumbs" class="thumbs"></div>
-    <textarea id="note" rows="2" placeholder="Infos utiles (facultatif) : taille, acheté en 2022, jamais porté, facture dispo…"></textarea>
-    <div class="row" style="margin-top:10px">
-      <button id="go" disabled>Analyser et estimer</button>
-      <span id="status" class="muted"></span>
+  <!-- VENDRE -->
+  <section id="v-sell" class="view">
+    <div class="topbar"><button class="icon-btn" data-go="home">←</button><h2>Vendre un objet</h2><span style="width:44px"></span></div>
+    <div id="sell-form">
+      <div class="card">
+        <div class="row between"><h2>Photos</h2><span class="muted small" id="count">0 / 8</span></div>
+        <div id="photos" class="photos"></div>
+        <p class="tips">Vue d'ensemble, étiquette, logo, numéro de série, semelle ou dessous, et chaque défaut. Plus il y a de détails, plus le prix est précis.</p>
+        <input id="files" type="file" accept="image/*" multiple hidden>
+      </div>
+      <div class="card">
+        <h2 style="margin-bottom:10px">Ce que tu sais déjà</h2>
+        <textarea id="note" rows="3" placeholder="Taille, année d'achat, porté 2 fois, facture, boîte d'origine…"></textarea>
+      </div>
+      <button id="go" class="btn accent block" disabled>Analyser et estimer le prix</button>
+      <p id="err" class="small" style="color:var(--warn);text-align:center"></p>
+    </div>
+    <div id="sell-loading" class="card loader" hidden>
+      <div class="ring"></div>
+      <h2>Analyse en cours…</h2>
+      <p class="muted small">1 à 3 minutes, tu peux laisser l'app ouverte.</p>
+      <div class="steps" id="steps">
+        <div>Identification de l'objet</div>
+        <div>Recherche d'objets identiques</div>
+        <div>Calcul du prix de revente</div>
+        <div>Rédaction des annonces</div>
+      </div>
     </div>
   </section>
 
-  <section id="result"></section>
-
-  <section class="card">
-    <h2>Mes objets</h2>
-    <div id="list" class="muted">Aucun objet pour l'instant.</div>
+  <!-- MES OBJETS -->
+  <section id="v-items" class="view">
+    <div class="topbar"><button class="icon-btn" data-go="home">←</button><h2>Mes objets</h2><span style="width:44px"></span></div>
+    <div class="chips" id="filters" style="margin-bottom:14px">
+      <button class="on" data-f="">Tous</button><button data-f="analysé">À publier</button><button data-f="en vente">En vente</button><button data-f="vendu">Vendus</button>
+    </div>
+    <div id="all" class="grid"></div>
   </section>
+
+  <!-- DÉTAIL -->
+  <section id="v-detail" class="view"></section>
 </main>
 
+<div class="sticky" id="sticky" hidden><div class="inner"><div><span class="muted small">Prix conseillé</span><br><b id="sticky-price"></b></div><a id="sticky-go" class="btn accent" target="_blank" rel="noopener">Publier</a></div></div>
+
+<nav><div class="bar">
+  <button data-go="home" class="on">Accueil</button>
+  <button data-go="sell" class="sell">＋ Vendre</button>
+  <button data-go="items">Mes objets</button>
+</div></nav>
+<div class="toast" id="toast"></div>
+
 <script>
-const $ = (s) => document.querySelector(s);
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => [...el.querySelectorAll(s)];
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;" }[c]));
-const eur = (n) => (n || n === 0) ? `${Math.round(n)} €` : "—";
-let images = [];
+const eur = (n) => (n || n === 0) && n !== "" ? `${Math.round(Number(n))} €` : "—";
+const toast = (t) => { const e = $("#toast"); e.textContent = t; e.classList.add("on"); setTimeout(() => e.classList.remove("on"), 1400); };
+const copy = async (t) => { try { await navigator.clipboard.writeText(t); } catch { const a = document.createElement("textarea"); a.value = t; document.body.append(a); a.select(); document.execCommand("copy"); a.remove(); } toast("Copié ✓"); };
 
 const SELL_LINKS = {
   vinted: "https://www.vinted.fr/items/new",
@@ -75,9 +206,26 @@ const SELL_LINKS = {
   ebay: "https://www.ebay.fr/sl/sell",
   "vestiaire collective": "https://fr.vestiairecollective.com/sell-clothes-online/",
   rakuten: "https://fr.shopping.rakuten.com/sell",
+  "back market": "https://www.backmarket.fr/fr-fr/buyback/home",
+  selency: "https://www.selency.fr/vendre",
 };
+const sellLink = (p) => SELL_LINKS[String(p).toLowerCase()] || null;
+const STATUS = { "analysé": ["À publier", ""], "en vente": ["En vente", "ok"], "vendu": ["Vendu", "warn"] };
 
-// Réduit les photos pour accélérer l'envoi (max 1600 px, JPEG)
+let items = [], images = [], current = null;
+
+// ---------- Navigation ----------
+function go(view) {
+  $$(".view").forEach((v) => v.classList.toggle("on", v.id === `v-${view}`));
+  $$("nav button").forEach((b) => b.classList.toggle("on", b.dataset.go === view && view !== "sell"));
+  $("#sticky").hidden = view !== "detail";
+  $("nav").hidden = view === "detail";
+  window.scrollTo({ top: 0 });
+}
+document.addEventListener("click", (e) => { const g = e.target.closest("[data-go]"); if (g) go(g.dataset.go); });
+$("#today").textContent = new Date().toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" });
+
+// ---------- Photos ----------
 function shrink(file) {
   return new Promise((resolve) => {
     const img = new Image();
@@ -92,17 +240,26 @@ function shrink(file) {
     img.src = URL.createObjectURL(file);
   });
 }
-
-$("#files").onchange = async (e) => {
-  for (const f of e.target.files) images.push(await shrink(f));
-  $("#thumbs").innerHTML = images.map((i) => `<img src="${i.preview}">`).join("");
+function renderPhotos() {
+  $("#photos").innerHTML = images.map((i, n) => `<div class="ph" style="background-image:url(${i.preview})"><button class="rm" data-rm="${n}">–</button></div>`).join("")
+    + (images.length < 8 ? `<label class="add" for="files">＋</label>` : "");
+  $("#count").textContent = `${images.length} / 8`;
   $("#go").disabled = !images.length;
-  e.target.value = "";
+}
+$("#photos").onclick = (e) => { const r = e.target.closest("[data-rm]"); if (r) { images.splice(+r.dataset.rm, 1); renderPhotos(); } };
+$("#files").onchange = async (e) => {
+  for (const f of [...e.target.files].slice(0, 8 - images.length)) images.push(await shrink(f));
+  e.target.value = ""; renderPhotos();
 };
+renderPhotos();
 
+// ---------- Analyse ----------
 $("#go").onclick = async () => {
-  $("#go").disabled = true;
-  $("#status").innerHTML = `<span class="spinner"></span> Identification et recherche des prix sur le web… (1 à 3 min)`;
+  $("#err").textContent = "";
+  $("#sell-form").hidden = true; $("#sell-loading").hidden = false;
+  const steps = $$("#steps div"); let i = 0;
+  const tick = () => { steps.forEach((s, n) => { s.className = n < i ? "done" : n === i ? "on" : ""; }); };
+  tick(); const timer = setInterval(() => { if (i < steps.length - 1) { i++; tick(); } }, 20000);
   try {
     const r = await fetch("/api/analyze", {
       method: "POST", headers: { "content-type": "application/json" },
@@ -110,102 +267,158 @@ $("#go").onclick = async () => {
     });
     const item = await r.json();
     if (!r.ok) throw new Error(item.error);
-    images = []; $("#thumbs").innerHTML = ""; $("#note").value = ""; $("#status").textContent = "";
-    show(item); loadList();
+    images = []; $("#note").value = ""; renderPhotos();
+    await load(); openItem(item.id);
   } catch (err) {
-    $("#status").innerHTML = `<span class="warn">${esc(err.message)}</span>`;
+    $("#err").textContent = err.message;
+  } finally {
+    clearInterval(timer); $("#sell-form").hidden = false; $("#sell-loading").hidden = true;
   }
-  $("#go").disabled = !images.length;
 };
 
-function show(item) {
-  const a = item.analysis, id = a.identification || {}, p = a.prix || {};
+// ---------- Listes ----------
+function tile(it) {
+  const [label, cls] = STATUS[it.status] || [it.status, ""];
+  return `<div class="tile" data-open="${it.id}">
+    <div class="img" style="background-image:url(${it.photos[0]})"><span class="pill badge ${cls}">${esc(label)}</span></div>
+    <p>${esc(it.analysis.identification?.titre)}</p><div class="price">${eur(it.analysis.prix?.optimal)}</div></div>`;
+}
+document.addEventListener("click", (e) => { const t = e.target.closest("[data-open]"); if (t) openItem(t.dataset.open); });
+let filter = "";
+$("#filters").onclick = (e) => { const b = e.target.closest("[data-f]"); if (!b) return; filter = b.dataset.f; $$("#filters button").forEach((x) => x.classList.toggle("on", x === b)); renderLists(); };
+
+function renderLists() {
+  const empty = `<div class="card empty" style="grid-column:1/-1"><h2>Rien pour l'instant</h2><p class="muted">Prends ton premier objet en photo.</p><button class="btn accent" data-go="sell">＋ Vendre un objet</button></div>`;
+  $("#recent").innerHTML = items.slice(0, 8).map(tile).join("") || empty;
+  const list = items.filter((x) => !filter || x.status === filter);
+  $("#all").innerHTML = list.map(tile).join("") || empty;
+  $("#s-sale").textContent = items.filter((x) => x.status === "en vente").length;
+  $("#s-sold").textContent = items.filter((x) => x.status === "vendu").length;
+  $("#s-value").textContent = eur(items.filter((x) => x.status !== "vendu").reduce((s, x) => s + (Number(x.analysis.prix?.optimal) || 0), 0));
+}
+async function load() { items = await (await fetch("/api/items")).json(); renderLists(); }
+
+// ---------- Détail ----------
+function fieldsOf(a) {
+  // Compatibilité avec les anciennes analyses (sans "champs")
+  if (a.champs?.length) return a.champs;
+  const f = [];
+  if (a.categorie) f.push({ nom: "Catégorie", valeur: a.categorie });
+  if (a.etat) f.push({ nom: "État", valeur: a.etat });
+  for (const [k, v] of Object.entries(a.attributs || {})) f.push({ nom: k, valeur: v });
+  return f;
+}
+
+function openItem(id) {
+  current = items.find((x) => x.id === id); if (!current) return;
+  const a = current.analysis, id_ = a.identification || {}, p = a.prix || {}, colis = a.colis || {};
   const annonces = a.annonces || [];
-  const listings = item.listings || {};
-  $("#result").innerHTML = `
-    <div class="card">
-      <div class="thumbs">${item.photos.map((u) => `<img src="${u}">`).join("")}</div>
-      <h2>${esc(id.titre)}</h2>
-      <p class="muted">${[id.marque, id.modele, id.reference, id.taille, id.dimensions, id.couleur, id.matiere].filter(Boolean).map(esc).join(" · ")}</p>
-      <p>État : ${esc(id.etat)} ${id.defauts?.filter(Boolean).length ? `— défauts : ${id.defauts.map(esc).join(", ")}` : ""}</p>
-      <p class="muted">Confiance : <b>${esc(id.confiance)}</b>${id.a_verifier?.filter(Boolean).length ? ` — <span class="warn">à vérifier : ${id.a_verifier.map(esc).join(", ")}</span>` : ""}</p>
-    </div>
-    <div class="card">
-      <h2>Prix conseillé</h2>
-      <div class="prices">
-        <div><span class="muted">Vente rapide</span><b>${eur(p.rapide)}</b></div>
-        <div class="best"><span class="muted">Optimal</span><b>${eur(p.optimal)}</b></div>
-        <div><span class="muted">Haut</span><b>${eur(p.haut)}</b></div>
+  let tab = 0, priceKey = "optimal";
+
+  const render = () => {
+    const x = annonces[tab] || {};
+    const l = current.listings?.[x.plateforme];
+    const price = priceKey === "optimal" && x.prix ? x.prix : p[priceKey];
+    const fields = fieldsOf(x);
+    const [label, cls] = STATUS[current.status] || [current.status, ""];
+    const all = [`Titre : ${x.titre}`, "", x.description, "", `Prix : ${eur(price)}`, ...fields.map((f) => `${f.nom} : ${f.valeur}`)].join("\n");
+
+    $("#v-detail").innerHTML = `
+      <div class="topbar"><button class="icon-btn" data-go="items">←</button><h2>Détails</h2><button class="icon-btn" id="del" title="Supprimer">🗑</button></div>
+      <div class="gallery"><div class="main" id="main" style="background-image:url(${current.photos[0]})"></div>
+        ${current.photos.length > 1 ? `<div class="thumbs">${current.photos.map((u, n) => `<div class="${n ? "" : "on"}" data-ph="${u}" style="background-image:url(${u})"></div>`).join("")}</div>` : ""}</div>
+
+      <p class="kicker">${esc([id_.marque, id_.categorie].filter(Boolean).join(" · "))}</p>
+      <h1 class="display title-xl">${esc(id_.titre)}</h1>
+      <div class="row" style="flex-wrap:wrap;margin:0 4px 14px">
+        <span class="pill ${cls}">${esc(label)}</span>
+        <span class="pill ${id_.confiance === "haute" ? "ok" : id_.confiance === "faible" ? "warn" : ""}">Confiance ${esc(id_.confiance || "?")}</span>
+        ${id_.taille ? `<span class="pill">Taille ${esc(id_.taille)}</span>` : ""}
+        ${id_.etat ? `<span class="pill">${esc(id_.etat)}</span>` : ""}
       </div>
-      <p class="muted">${esc(p.justification)}</p>
-    </div>
-    <div class="card">
-      <h2>Comparables trouvés (${(a.comparables || []).length})</h2>
-      <table><tr><th>Objet</th><th>Site</th><th>Prix</th><th>Statut</th></tr>
-      ${(a.comparables || []).map((c) => `<tr>
-        <td>${c.url ? `<a href="${esc(c.url)}" target="_blank" rel="noopener">${esc(c.titre)}</a>` : esc(c.titre)}<br><span class="muted">${esc(c.similarite)} · ${esc(c.etat)}</span></td>
-        <td>${esc(c.plateforme)}</td><td>${eur(c.prix)}</td><td>${esc(c.statut)}</td></tr>`).join("")}
-      </table>
-    </div>
-    <div class="card">
-      <h2>Annonces prêtes</h2>
-      <div class="tabs">${annonces.map((x, i) => `<button data-tab="${i}">${esc(x.plateforme)}${listings[x.plateforme] ? (listings[x.plateforme].statut === "vendue" ? " 💰" : " ✅") : ""}</button>`).join("")}</div>
-      <div id="annonce"></div>
-    </div>
-    ${a.conseils?.length ? `<div class="card"><h2>Conseils</h2><ul>${a.conseils.map((c) => `<li>${esc(c)}</li>`).join("")}</ul></div>` : ""}
-  `;
-  const tabs = [...document.querySelectorAll("[data-tab]")];
-  const open = (i) => {
-    tabs.forEach((t) => t.classList.toggle("on", t.dataset.tab == i));
-    const x = annonces[i];
-    const l = listings[x.plateforme];
-    const sell = SELL_LINKS[x.plateforme.toLowerCase()];
-    const attrs = Object.entries(x.attributs || {}).map(([k, v]) => `<span class="tag">${esc(k)} : ${esc(v)}</span>`).join("");
-    $("#annonce").innerHTML = `
-      <p><b>Titre</b> <button class="ghost" data-copy="titre">Copier</button></p><pre>${esc(x.titre)}</pre>
-      <p><b>Description</b> <button class="ghost" data-copy="description">Copier</button></p><pre>${esc(x.description)}</pre>
-      <p><b>Prix :</b> ${eur(x.prix)} · <b>Catégorie :</b> ${esc(x.categorie)} · <b>État :</b> ${esc(x.etat)}</p>
-      <p>${attrs}</p>
-      <p class="muted">Mots-clés : ${(x.mots_cles || []).map(esc).join(", ")}</p>
-      <div class="row">
-        ${sell ? `<a class="btn" href="${sell}" target="_blank" rel="noopener">Ouvrir ${esc(x.plateforme)} pour publier</a>` : ""}
-      </div>
-      <div class="card" style="margin-top:12px">
-        ${l ? `<p>Statut : <b>${esc(l.statut)}</b>${l.url ? ` — <a href="${esc(l.url)}" target="_blank" rel="noopener">voir l'annonce</a>` : ""}</p>` : `<p class="muted">Pas encore publiée.</p>`}
-        <input id="lurl" placeholder="Lien de l'annonce une fois publiée" value="${esc(l?.url || "")}">
-        <div class="row" style="margin-top:8px">
-          <button data-mark="publiée">Marquer publiée</button>
-          <button class="ghost" data-mark="vendue">Marquer vendue 💰</button>
+
+      <div class="card">
+        <div class="row between" style="margin-bottom:12px"><h2>Prix de vente</h2><span class="muted small">touche pour choisir</span></div>
+        <div class="prices">
+          ${[["rapide", "Rapide"], ["optimal", "Optimal"], ["haut", "Haut"]].map(([k, t]) => `<button data-pk="${k}" class="${k === priceKey ? "on" : ""}"><span class="small">${t}</span><b>${eur(p[k])}</b></button>`).join("")}
         </div>
-      </div>`;
-    document.querySelectorAll("[data-copy]").forEach((b) => b.onclick = async () => {
-      await navigator.clipboard.writeText(x[b.dataset.copy]); b.textContent = "Copié ✓";
-    });
-    document.querySelectorAll("[data-mark]").forEach((b) => b.onclick = async () => {
-      const r = await fetch(`/api/items/${item.id}/listing`, {
+        ${p.justification ? `<p class="muted small" style="margin:12px 2px 0">${esc(p.justification)}</p>` : ""}
+      </div>
+
+      <div class="card">
+        <h2 style="margin-bottom:12px">Annonce</h2>
+        <div class="chips">${annonces.map((y, n) => `<button data-tab="${n}" class="${n === tab ? "on" : ""}">${esc(y.plateforme)}${current.listings?.[y.plateforme] ? (current.listings[y.plateforme].statut === "vendue" ? " 💰" : " ✓") : ""}</button>`).join("")}</div>
+
+        <div class="row between" style="margin-top:16px"><span class="muted small">TITRE</span><button class="copy" data-c="titre">Copier</button></div>
+        <div class="block-text" style="font-weight:600">${esc(x.titre)}</div>
+        <div class="row between"><span class="muted small">DESCRIPTION</span><button class="copy" data-c="description">Copier</button></div>
+        <div class="block-text">${esc(x.description)}</div>
+
+        <div class="row between" style="margin-top:6px"><span class="muted small">INFOS DEMANDÉES PAR ${esc(String(x.plateforme || "").toUpperCase())}</span><span class="muted small">touche pour copier</span></div>
+        <dl class="fields">
+          <div class="field" data-v="${esc(Math.round(price || 0))}"><dt>Prix</dt><dd>${eur(price)}</dd></div>
+          ${fields.map((f) => `<div class="field ${/vérifier/i.test(f.valeur) ? "check" : ""}" data-v="${esc(f.valeur)}"><dt>${esc(f.nom)}</dt><dd>${esc(f.valeur)}</dd></div>`).join("")}
+        </dl>
+        ${x.mots_cles?.length ? `<p class="muted small" style="margin-top:10px">Mots-clés : ${x.mots_cles.map(esc).join(", ")}</p>` : ""}
+        <button class="btn ghost block" id="copy-all" style="margin-top:12px">Tout copier</button>
+      </div>
+
+      ${colis.poids_kg || colis.dimensions_cm ? `<div class="card"><h2 style="margin-bottom:6px">Colis</h2><dl class="fields">
+        ${colis.poids_kg ? `<div class="field" data-v="${esc(colis.poids_kg)}"><dt>Poids estimé</dt><dd>${esc(colis.poids_kg)} kg</dd></div>` : ""}
+        ${colis.dimensions_cm ? `<div class="field" data-v="${esc(colis.dimensions_cm)}"><dt>Dimensions</dt><dd>${esc(colis.dimensions_cm)} cm</dd></div>` : ""}
+        ${colis.emballage ? `<div class="field" data-v="${esc(colis.emballage)}"><dt>Emballage</dt><dd>${esc(colis.emballage)}</dd></div>` : ""}
+      </dl></div>` : ""}
+
+      <div class="card">
+        <h2 style="margin-bottom:6px">Suivi sur ${esc(x.plateforme)}</h2>
+        <p class="muted small">${l ? `Statut : <b>${esc(l.statut)}</b>${l.url ? ` · <a href="${esc(l.url)}" target="_blank" rel="noopener">voir l'annonce ↗</a>` : ""}` : "Pas encore publiée. Une fois en ligne, colle le lien ici."}</p>
+        <input id="lurl" placeholder="Lien de l'annonce" value="${esc(l?.url || "")}">
+        <div class="row" style="margin-top:10px"><button class="btn block" data-mark="publiée">Publiée ✓</button><button class="btn ghost block" data-mark="vendue">Vendue 💰</button></div>
+      </div>
+
+      <div class="card">
+        <h2 style="margin-bottom:6px">Identification</h2>
+        <dl class="fields">
+          ${[["Marque", id_.marque], ["Modèle", id_.modele], ["Référence", id_.reference], ["Matière", id_.matiere], ["Couleur", id_.couleur], ["Taille", id_.taille], ["Dimensions", id_.dimensions], ["État", id_.etat]]
+            .filter(([, v]) => v).map(([k, v]) => `<div class="field" data-v="${esc(v)}"><dt>${k}</dt><dd>${esc(v)}</dd></div>`).join("")}
+        </dl>
+        ${id_.defauts?.filter(Boolean).length ? `<p class="small"><b>Défauts :</b> ${id_.defauts.map(esc).join(", ")}</p>` : ""}
+        ${id_.a_verifier?.filter(Boolean).length ? `<p class="small" style="color:var(--warn)"><b>À vérifier :</b> ${id_.a_verifier.map(esc).join(", ")}</p>` : ""}
+      </div>
+
+      ${(a.comparables || []).length ? `<div class="card"><h2 style="margin-bottom:6px">Objets comparables</h2><table>
+        ${a.comparables.map((c) => `<tr><td>${c.url ? `<a href="${esc(c.url)}" target="_blank" rel="noopener">${esc(c.titre)} ↗</a>` : esc(c.titre)}<br><span class="muted small">${esc(c.plateforme)} · ${esc(c.statut)} · ${esc(c.similarite)}</span></td><td>${eur(c.prix)}</td></tr>`).join("")}
+      </table></div>` : ""}
+
+      ${a.conseils?.length ? `<div class="card"><h2 style="margin-bottom:6px">Conseils</h2>${a.conseils.map((c) => `<p class="small">• ${esc(c)}</p>`).join("")}</div>` : ""}
+    `;
+
+    $("#sticky-price").textContent = eur(price);
+    const link = sellLink(x.plateforme);
+    $("#sticky-go").textContent = link ? `Publier sur ${x.plateforme}` : "Copier l'annonce";
+    $("#sticky-go").href = link || "#";
+    $("#sticky-go").onclick = (e) => { copy(all); if (!link) e.preventDefault(); };
+
+    $$("[data-ph]").forEach((t) => t.onclick = () => { $("#main").style.backgroundImage = `url(${t.dataset.ph})`; $$("[data-ph]").forEach((u) => u.classList.toggle("on", u === t)); });
+    $$("[data-pk]").forEach((b) => b.onclick = () => { priceKey = b.dataset.pk; render(); });
+    $$("[data-tab]").forEach((b) => b.onclick = () => { tab = +b.dataset.tab; render(); });
+    $$("[data-c]").forEach((b) => b.onclick = () => copy(x[b.dataset.c] || ""));
+    $$(".field").forEach((f) => f.onclick = () => copy(f.dataset.v));
+    $("#copy-all").onclick = () => copy(all);
+    $("#del").onclick = async () => { if (!confirm("Supprimer cet objet ?")) return; await fetch(`/api/items/${current.id}`, { method: "DELETE" }); await load(); go("items"); };
+    $$("[data-mark]").forEach((b) => b.onclick = async () => {
+      const r = await fetch(`/api/items/${current.id}/listing`, {
         method: "POST", headers: { "content-type": "application/json" },
         body: JSON.stringify({ plateforme: x.plateforme, url: $("#lurl").value, statut: b.dataset.mark }),
       });
-      const updated = await r.json(); show(updated); loadList();
+      const up = await r.json(); items = items.map((y) => (y.id === up.id ? up : y)); current = up; renderLists(); render();
+      toast(b.dataset.mark === "vendue" ? "Bravo pour la vente 💰" : "Annonce enregistrée ✓");
     });
   };
-  tabs.forEach((t) => t.onclick = () => open(+t.dataset.tab));
-  if (annonces.length) open(0);
-  $("#result").scrollIntoView({ behavior: "smooth" });
+  render(); go("detail");
 }
 
-async function loadList() {
-  const items = await (await fetch("/api/items")).json();
-  if (!items.length) return;
-  $("#list").innerHTML = items.map((it, i) => `
-    <div class="item card" data-i="${i}">
-      <img src="${it.photos[0]}">
-      <div><b>${esc(it.analysis.identification?.titre)}</b><br>
-      <span class="muted">${eur(it.analysis.prix?.optimal)} · ${esc(it.status)}</span></div>
-    </div>`).join("");
-  document.querySelectorAll(".item").forEach((el) => el.onclick = () => show(items[el.dataset.i]));
-}
-loadList();
+load();
 </script>
 </body>
 </html>
